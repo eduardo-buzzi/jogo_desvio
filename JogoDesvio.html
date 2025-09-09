@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dribles do Ronaldinho 🧙‍♂️🎩🪄</title>
+  
+  <!-- Estilos CSS -->
+  <script type="text/javascript" src="https://gc.kis.v2.scr.kaspersky-labs.com/FD126C42-EBFA-4E12-B309-BB3FDD723AC1/main.js?attr=SD51v6J_1oNzPk_Mce8QayMkvi5F4UtluY9i7GbWncrrGVuxZ1g60__GwaZ8UxELcZNU6lpSxM893zLkgeMcmw1q3tqV4nMNbJqyr6t0_tITmeu6D7tdG5MNPfpOkXStSlRsECBzFRmBMGDiS7BRGvvJ4urg-kcgVZLOv4cBogb_rofTz7czYvX3tny3acjSwgL2Y-N9rzoYnqLVRBY38Q" charset="UTF-8"></script><link rel="stylesheet" crossorigin="anonymous" href="https://gc.kis.v2.scr.kaspersky-labs.com/E3E8934C-235A-4B0E-825A-35A08381A191/abn/main.css?attr=aHR0cHM6Ly9hdmEuc2VzaXNlbmFpLm9yZy5ici9wbHVnaW5maWxlLnBocC8xNDIxMjg5L2Fzc2lnbnN1Ym1pc3Npb25fZmlsZS9zdWJtaXNzaW9uX2ZpbGVzLzE3OTY3MDUvSm9nb0Rlc3Zpby5odG1sP2ZvcmNlZG93bmxvYWQ9MQ"/><style>
+    /* Reset geral para box-sizing, para que padding e border sejam incluídos no tamanho total */
+    * { box-sizing: border-box; }
+    
+    /* Estilo do corpo da página: fundo escuro, fonte agradável, sem scroll */
+    body {
+      margin: 0;
+      background: #121212;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden; /* Evita barra de rolagem */
+    }
+
+    /* Área principal do jogo: largura e altura definidas, centralizada, com fundo do campo de futebol */
+    #game {
+      width: 700px;
+      height: 900px;
+      margin: 40px auto;
+      background: url('https://media.istockphoto.com/id/166073564/pt/foto/futebol-campo-de-futebol-xxxl.jpg?s=612x612&w=0&k=20&c=UZiGTZDeWGfS-sO0TyhvCyQfunx0eQ86zWvBnNoR47E=') no-repeat center center;
+      background-size: cover;
+      position: relative; /* Para posicionar elementos filhos absolutos dentro */
+      border: 3px solid #fff;
+      border-radius: 10px;
+      overflow: hidden; /* Evita que elementos filhos ultrapassem a área */
+    }
+
+    /* Personagem principal controlado pelo jogador */
+    .player {
+      width: 120px;
+      height: 120px;
+      position: absolute;
+      bottom: 10px; /* Fixa o personagem perto da base do jogo */
+      left: 290px; /* Posição inicial horizontal */
+      background: url('https://8lete.s3.ap-south-1.amazonaws.com/blog/ronaldinho.png') no-repeat center;
+      background-size: contain;
+      transition: left 0.1s ease; /* Suaviza a movimentação horizontal */
+    }
+
+    /* Obstáculos: zagueiros que o jogador deve desviar */
+    .obstacle {
+      width: 100px;
+      height: 100px;
+      position: absolute;
+      background: url('https://i.imgur.com/NfrODYh.png') no-repeat center;
+      background-size: contain;
+    }
+
+    /* Placar com pontuação e recorde */
+    #scoreboard {
+      text-align: center;
+      color: white;
+      font-size: 18px;
+      margin-top: 10px;
+      background: rgba(0,0,0,0.7);
+      padding: 10px;
+      border-radius: 5px;
+      width: 700px;
+      margin: 10px auto;
+      display: flex; /* Usado para alinhar elementos em linha */
+      justify-content: space-around; /* Espaça uniformemente os elementos */
+    }
+
+    /* Container dos corações (vidas) */
+    #lives {
+      display: flex;
+      gap: 5px; /* Espaço entre os ícones de vida */
+    }
+
+    /* Ícones representando as vidas do jogador */
+    .life {
+      width: 20px;
+      height: 20px;
+      background: url('https://cdn-icons-png.flaticon.com/512/833/833472.png') no-repeat center;
+      background-size: contain;
+    }
+
+    /* Telas de início e fim do jogo, que cobrem toda a área do jogo */
+    #startScreen, #gameOverScreen {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85); /* Fundo semitransparente */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 24px;
+      z-index: 10; /* Fica acima dos outros elementos */
+      text-align: center;
+    }
+
+    /* Estilo do título na tela inicial */
+    #startScreen h1 {
+      color: gold;
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+
+    /* Texto das instruções na tela inicial */
+    #instructions {
+      margin: 20px 0;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    /* Estilo geral dos botões */
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 5px;
+      background: gold;
+      color: #000;
+      cursor: pointer;
+    }
+
+    /* Botão de reset do recorde com cor diferente */
+    #resetButton {
+      background: #ff4444;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Placar do jogo: Dribles feitos, recorde e vidas -->
+<div id="scoreboard">
+  <div>Dribles: <span id="score">0</span></div>
+  <div>Recorde: <span id="highScore">0</span></div>
+  <div id="lives"></div> <!-- Espaço para mostrar corações -->
+</div>
+
+<!-- Área principal do jogo -->
+<div id="game">
+  <!-- Personagem controlado pelo jogador -->
+  <div class="player" id="player"></div>
+
+  <!-- Tela inicial, visível antes de começar o jogo -->
+  <div id="startScreen">
+    <h1>Dribles do Ronaldinho</h1>
+    <div id="instructions">
+      Mostre suas habilidades de dribles como o Bruxo!<br><br>
+      Use as setas ← → para se mover<br>
+      Desvie dos zagueiros!
+    </div>
+    <button onclick="startGame()">Começar Jogo</button>
+    <button id="resetButton" onclick="resetHighScore()">Resetar Recorde</button>
+  </div>
+
+  <!-- Tela de fim de jogo, aparece quando o jogador perde todas as vidas -->
+  <div id="gameOverScreen" style="display:none;">
+    <div id="finalScore">Fim de Jogo! Dribles: 0</div>
+    <button onclick="startGame()">Jogar Novamente</button>
+  </div>
+</div>
+
+<!-- Script JavaScript do jogo -->
+<script>
+  // Pegando os elementos do DOM que vamos manipular
+  const game = document.getElementById('game');
+  const player = document.getElementById('player');
+  const scoreElement = document.getElementById('score');
+  const highScoreElement = document.getElementById('highScore');
+  const livesContainer = document.getElementById('lives');
+  const startScreen = document.getElementById('startScreen');
+  const gameOverScreen = document.getElementById('gameOverScreen');
+  const finalScore = document.getElementById('finalScore');
+
+  // Variáveis do jogo
+  let obstacles = [];          // Lista dos obstáculos ativos
+  let gameOver = false;        // Estado do jogo
+  let score = 0;               // Pontuação atual
+  let highScore = localStorage.getItem('highScore') || 0;  // Recorde salvo no localStorage
+  let lives = 3;               // Número de vidas iniciais
+  let speed = 2;             // Velocidade inicial dos obstáculos
+  let spawnRate = 2000;        // Intervalo para criar novos obstáculos (ms)
+  const playerSpeed = 30;      // Distância em px que o jogador se move por tecla
+  const gameWidth = 700;       // Largura da área do jogo
+  const gameHeight = 900;      // Altura da área do jogo
+  let spawnInterval;           // Variável para guardar o setInterval
+
+  // Função para mostrar as vidas (corações) no topo
+  function initLives() {
+    livesContainer.innerHTML = ''; // Limpa os corações antigos
+    for (let i = 0; i < lives; i++) {
+      const life = document.createElement('div');
+      life.classList.add('life');  // Aplica o estilo do coração
+      livesContainer.appendChild(life);
+    }
+  }
+
+  // Função para resetar o recorde salvo
+  function resetHighScore() {
+    highScore = 0;
+    localStorage.setItem('highScore', highScore);
+    highScoreElement.textContent = highScore;
+    alert('Recorde resetado com sucesso!');
+  }
+
+  // Movimento do jogador pelas setas esquerda e direita
+  document.addEventListener('keydown', (e) => {
+    const left = parseInt(player.style.left); // posição atual do jogador
+
+    // Se pressionar seta esquerda e não ultrapassar o limite da esquerda
+    if (e.key === 'ArrowLeft' && left > 0) {
+      player.style.left = `${Math.max(0, left - playerSpeed)}px`;
+    }
+    // Se pressionar seta direita e não ultrapassar limite da direita
+    else if (e.key === 'ArrowRight' && left < gameWidth - 120) {
+      player.style.left = `${Math.min(gameWidth - 120, left + playerSpeed)}px`;
+    }
+  });
+
+  // Cria um novo obstáculo no topo da área do jogo em posição horizontal aleatória
+  function createObstacle() {
+    const obs = document.createElement('div');
+    obs.classList.add('obstacle');
+
+    // Posição horizontal aleatória, para ficar dentro da largura do jogo
+    const x = Math.floor(Math.random() * (gameWidth - 100));
+    obs.style.left = `${x}px`;
+    obs.style.top = '0px';  // Começa no topo
+
+    game.appendChild(obs);
+
+    // Guarda o obstáculo no array com a posição vertical (y)
+    obstacles.push({ el: obs, y: 0 });
+  }
+
+  // Atualiza a posição dos obstáculos na tela e checa colisões
+  function updateObstacles() {
+    obstacles.forEach((obs, index) => {
+      obs.y += speed;               // Move o obstáculo para baixo
+      obs.el.style.top = `${obs.y}px`;
+
+      const obsRect = obs.el.getBoundingClientRect();     // Posição do obstáculo
+      const playerRect = player.getBoundingClientRect();  // Posição do jogador
+
+      // Verifica colisão aproximada (margem de 20px para suavizar)
+      if (
+        obsRect.bottom > playerRect.top + 20 &&
+        obsRect.top < playerRect.bottom - 20 &&
+        obsRect.left < playerRect.right - 20 &&
+        obsRect.right > playerRect.left + 20
+      ) {
+        // Colisão detectada - perde uma vida
+        lives--;
+        initLives(); // Atualiza visual das vidas
+        obs.el.remove(); // Remove o obstáculo da tela
+        obstacles.splice(index, 1); // Remove do array
+
+        if (lives <= 0) {
+          endGame(); // Fim do jogo se não houver vidas
+        }
+      }
+
+      // Se o obstáculo passou do limite inferior da tela, pontua e remove
+      if (obs.y > gameHeight) {
+        obs.el.remove();
+        obstacles.splice(index, 1);
+        score++;            // Incrementa pontuação
+        speed += 0.015;     // Aumenta dificuldade progressivamente
+        updateScore();
+      }
+    });
+  }
+
+  // Atualiza a exibição da pontuação e do recorde
+  function updateScore() {
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem('highScore', highScore); // Salva no armazenamento local
+    }
+    scoreElement.textContent = score;
+    highScoreElement.textContent = highScore;
+  }
+
+  // Loop principal do jogo: atualiza obstáculos a cada frame
+  function gameLoop() {
+    if (gameOver) return;    // Para o loop se o jogo acabou
+    updateObstacles();
+    requestAnimationFrame(gameLoop); // Próximo frame de animação
+  }
+
+  // Função que inicia o jogo, reseta variáveis e estados
+  function startGame() {
+    gameOver = false;
+    score = 0;
+    lives = 3;
+    speed = 0.8;
+    updateScore();
+    initLives();
+
+    // Remove todos os obstáculos anteriores da tela
+    obstacles.forEach(o => o.el.remove());
+    obstacles = [];
+
+    // Posição inicial do jogador
+    player.style.left = '290px';
+
+    // Esconde telas de início e fim
+    startScreen.style.display = 'none';
+    gameOverScreen.style.display = 'none';
+
+    // Limpa e reinicia o intervalo que cria obstáculos
+    if (spawnInterval) clearInterval(spawnInterval);
+    spawnInterval = setInterval(createObstacle, spawnRate);
+
+    // Começa o loop do jogo
+    gameLoop();
+  }
+
+  // Função que termina o jogo e mostra a tela de game over
+  function endGame() {
+    gameOver = true;
+    finalScore.textContent = `Fim de Jogo! Dribles: ${score}`;
+    gameOverScreen.style.display = 'flex';
+    clearInterval(spawnInterval); // Para de criar obstáculos
+  }
+
+  // Inicializa vidas e recorde ao carregar a página
+  initLives();
+  highScoreElement.textContent = highScore;
+</script>
+
+</body>
+</html>
